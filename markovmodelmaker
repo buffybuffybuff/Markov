@@ -1,0 +1,73 @@
+
+import random
+import string
+
+def MarkovMake(doc,numsamples):
+    ##This function creates the text model by taking 'numsamples' number
+    ##of samples from 'doc' source corpus (plain .txt file). The Model is a
+    ##directed graph whose arcs represent an association between a word and
+    ##possible subsequent phrases. Multiple occurrences of a certain
+    ##phrase after a certain word are represented by a thicker not shorter
+    ##arc, preserving the weightedness aspect while reducing the complexity
+    ##of building the model.
+    
+    ##open and read file
+    textObject=open(doc, 'r')
+    text=textObject.read()
+    ##strip new line characters and punctuation
+    text = text.replace('\n', ' ') 
+    text = text.translate(string.maketrans("",""), string.punctuation)
+    text = text.lower()
+    ##tokenize file into an list of words indexed in order of appearance
+    wordList=text.split(' ')
+    ##initialize empty graph
+    textModel={}
+    ##initialize counter
+    i=0
+    ##parse wordlist and load arcs and nodes into the text model
+    while i<numsamples:
+        ##find a random word
+        j=random.randint(1, len(wordList)-6)
+        ##associate it with a phrase if it isn't in the corpus
+        if wordList[j] in textModel:
+            textModel[wordList[j]]=textModel[wordList[j]]+[wordList[j+1]+' '+wordList[j+2]]
+        ##add associations if it is in the corpus 
+        else:    
+            textModel[wordList[j]]=[wordList[j+1]+' '+wordList[j+2]+' '+wordList[j+2]+' ']
+        ##counter 
+        i=i+1
+    ##return the Graph
+    return textModel
+
+def findSentence(start, wordDict, outputlength):
+    ## this function creates a potential construction from the
+    ## text by finding a path to a '.' from a given start node
+    ## I'm not handling the exceptions correctly. 
+    ## startpart!
+    suffix=start
+    ##counter
+    i=0
+    ##directed graphs with weighted paths that represents corpus
+    wordDict=wordDict
+    suffixList=wordDict[suffix]
+    sentence=suffix
+    holdingcell=[]
+    while i < outputlength:
+        i=i+1
+        ## push forward
+        r=random.randint(0,len(suffixList)-1)
+        sentence=sentence+' '+suffixList[r]
+        holdingcell=sentence.split(' ')
+        suffix=holdingcell[len(holdingcell)-1]
+        try:
+            suffixList=wordDict[suffix]
+        except:
+            KeyError
+            print
+    ## handle infinite loop issue
+    ## ...sooon?
+    ## JK
+    ## return graph
+    return sentence
+    
+
